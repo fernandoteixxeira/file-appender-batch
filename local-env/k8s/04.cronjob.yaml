@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+    labels:
+        app: file-appender
+    name: file-appender-batch
+    namespace: file-appender
+spec:
+    schedule: '*/10 * * * *'
+    suspend: false
+    successfulJobsHistoryLimit: 3
+    failedJobsHistoryLimit: 3
+    concurrencyPolicy: Forbid
+    jobTemplate:
+        spec:
+            activeDeadlineSeconds: 43200
+            parallelism: 9
+            template:
+                metadata:
+                    annotations:
+                        sidecar.istio.io/inject: "false"
+                spec:
+                    dnsPolicy: ClusterFirst
+                    restartPolicy: OnFailure
+                    schedulerName: default-scheduler
+                    terminationGracePeriodSeconds: 30
+                    containers:
+                        -   name: file-appender-batch
+                            image: registry.local:5050/file-appender-batch
+                            imagePullPolicy: IfNotPresent
+                            envFrom:
+                                -   secretRef:
+                                        name: envs
+                            volumeMounts:
+                                -   name: file-appender-volume
+                                    mountPath: /shared
+                    volumes:
+                        -   name: file-appender-volume
+                            persistentVolumeClaim:
+                                claimName: file-appender-storage
+
