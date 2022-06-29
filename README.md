@@ -15,7 +15,6 @@ Execute commands from "./local-env/k8s" directory.
 
 ```shell
 ./start.sh
-./stop.sh
 ```
 
 ### Remover recursos
