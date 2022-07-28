@@ -21,11 +21,15 @@ public class FileWriter extends AbstractFileWriter {
     }
 
     public void append(final String text) {
-        try {
-            Files.writeString(path, text + System.lineSeparator(), StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            log.error("ERROR to append file", e);
-        }
+        boolean processed = false;
+        do {
+            try {
+                Files.writeString(path, text + System.lineSeparator(), StandardOpenOption.APPEND);
+                processed = true;
+            } catch (IOException e) {
+                log.error("ERROR to append file", e);
+            }
+        } while (!processed);
     }
 
 }

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+    name: pod-volume
+    namespace: file-appender
+spec:
+    containers:
+        - name: pod-volume
+          image: ubuntu
+          command: [ "/bin/bash" ]
+          args:
+              - -c
+              - >
+                  tail -f /dev/null;
+          volumeMounts:
+              -   name: file-appender-volume
+                  mountPath: /shared
+    restartPolicy: Always
+    volumes:
+        -   name: file-appender-volume
+            persistentVolumeClaim:
+                claimName: file-appender-storage

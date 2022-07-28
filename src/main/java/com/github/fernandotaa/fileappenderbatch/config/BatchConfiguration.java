@@ -64,6 +64,7 @@ public class BatchConfiguration {
         return jobBuilderFactory.get("main_job")
             .start(appenderStep)
             .next(checkerStep)
+//            .start(checkerStep)
             .build();
     }
 

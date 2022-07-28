@@ -3,18 +3,21 @@ kind: CronJob
 metadata:
     labels:
         app: file-appender
+        managed-by: harness
+        release: release-bb45d0e5-2957-32ab-a9cc-a1936aeb268c
+        releaseNumber: "79"
     name: file-appender-batch
-    namespace: file-appender
+    namespace: ms-savings-cdb
 spec:
-    schedule: '*/50 * * * *'
+    schedule: '50 15 * * *'
     suspend: false
-    successfulJobsHistoryLimit: 3
-    failedJobsHistoryLimit: 3
+    successfulJobsHistoryLimit: 50
+    failedJobsHistoryLimit: 50
     concurrencyPolicy: Forbid
     jobTemplate:
         spec:
             activeDeadlineSeconds: 43200
-            parallelism: 10
+            parallelism: 50
             template:
                 metadata:
                     annotations:
@@ -26,16 +29,24 @@ spec:
                     terminationGracePeriodSeconds: 30
                     containers:
                         -   name: file-appender-batch
-                            image: registry.local:5050/file-appender-batch
+                            image: fernandotaa/file-appender-batch:2
                             imagePullPolicy: IfNotPresent
-                            envFrom:
-                                -   secretRef:
-                                        name: envs
+                            command: [ "/bin/bash" ]
+                            args:
+                                - -c
+                                - >
+                                    export CUSTOM_HOST_NAME=$HOSTNAME;
+                                    java -jar /app.jar;
+                            env:
+                                -   name: FILE_DIRECTORY
+                                    value: "/shared/"
+                                -   name: RUN_UTIL
+                                    value: "1000000"
                             volumeMounts:
                                 -   name: file-appender-volume
                                     mountPath: /shared
                     volumes:
                         -   name: file-appender-volume
                             persistentVolumeClaim:
-                                claimName: file-appender-storage
+                                claimName: file-appender-batch
 

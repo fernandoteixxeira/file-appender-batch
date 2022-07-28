@@ -1,5 +1,5 @@
 app:
-    run-util: ${RUN_UTIL}
-    file: ${FILE_DIRECTORY}file${CUSTOM_HOST_NAME:}.txt
+    run-util: ${RUN_UTIL:10}
+    file: ${FILE_DIRECTORY:./}${CUSTOM_HOST_NAME:file}.txt
     ftp-file: /file.txt
     host: ${CUSTOM_HOST_NAME:}
